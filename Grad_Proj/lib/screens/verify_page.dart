@@ -119,7 +119,7 @@ class _VerifyPageState extends State<VerifyPage> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 12, vertical: 8)),
                   onPressed: () {
-                    BlocProvider.of<UserCubit>(context).ConfirmEmail();
+                    BlocProvider.of<UserCubit>(context).confirmEmail();
                     if (state is ConfirmEmailSuccess) {
                       Navigator.pop(context);
                     }

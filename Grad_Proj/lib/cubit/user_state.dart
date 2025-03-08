@@ -14,17 +14,13 @@ final class SignInFailure extends UserState {
 }
 
 
-final class SignUpSuccess extends UserState {
-  final bool success;
-
-  SignUpSuccess({required this.success});
-}
+final class SignUpSuccess extends UserState {}
 
 final class SignUpLoading extends UserState {}
 
 final class SignUpFailure extends UserState {
   final String errMessage;
-  final Map errors;
+  final dynamic errors;
   
   SignUpFailure({required this.errMessage,required this.errors});
 }

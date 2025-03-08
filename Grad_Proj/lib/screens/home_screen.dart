@@ -2,6 +2,7 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../Components/color.dart';
 import 'dash_board.dart';
 import 'farms_screen.dart';
@@ -86,6 +87,11 @@ class _HomeScreenState extends State<HomeScreen> {
       });
   }
 
+  Future<void> _login() async {
+      final prefs = await SharedPreferences.getInstance();
+      prefs.setBool('isLoggedIn', false);
+    }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -115,6 +121,7 @@ class _HomeScreenState extends State<HomeScreen> {
             GestureDetector(
               onTap: () {
                 print("call acc");
+                _login();
               },
               child: Image.asset('assets/images/image 6.png',
                   width: 30, height: 30),

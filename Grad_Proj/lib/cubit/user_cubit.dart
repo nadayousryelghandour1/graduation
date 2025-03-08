@@ -8,7 +8,6 @@ import 'package:grd_proj/core/api/end_points.dart';
 import 'package:grd_proj/core/errors/exception.dart';
 import 'package:grd_proj/cubit/user_state.dart';
 import 'package:grd_proj/models/sign_in_model.dart';
-import 'package:grd_proj/models/sign_up_model.dart';
 
 class UserCubit extends Cubit<UserState> {
   UserCubit(this.api) : super(UserInitial());
@@ -40,7 +39,7 @@ class UserCubit extends Cubit<UserState> {
   //Confirm Form key
   GlobalKey<FormState> confirmFormKey = GlobalKey();
 
-  /// ask dio to make post request access link using the data
+  
   SignInModel? user;
   singIn() async {
     try {
@@ -59,7 +58,7 @@ class UserCubit extends Cubit<UserState> {
     }
   }
 
-  SignUpModel ? errMessage;
+
   singUp() async {
     try {
       emit(SignUpLoading());
@@ -72,20 +71,19 @@ class UserCubit extends Cubit<UserState> {
         ApiKey.firstName: signUpFirstName.text,
         ApiKey.lastName: signUpLastName.text,
       });
-      emit(SignUpSuccess(success: true));
+      emit(SignUpSuccess());
     } on ServerException catch (e) {
-      // print("==============${errMessage!.email}==============");
-      // print("==============${errMessage!.lasttName}==============");
       emit(SignUpFailure(errMessage: e.errorModel.message , errors: e.errorModel.error));
     }
   }
 
-  ConfirmEmail() async {
+  confirmEmail() async {
     try {
       emit(ConfirmEmailLoading());
       String url = confirmToken.text;
       String token = url.substring(url.indexOf("token="));
       print(token);
+      // ignore: unused_local_variable
       final response = await api
           .post(EndPoints.confirmEmail, data: {
             ApiKey.token: token});

@@ -1,12 +1,11 @@
 // ignore_for_file: prefer_const_constructors, avoid_unnecessary_containers, deprecated_member_use, sort_child_properties_last
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:grd_proj/components/color.dart';
 import 'package:grd_proj/cubit/user_cubit.dart';
 import 'package:grd_proj/cubit/user_state.dart';
-import 'package:grd_proj/screens/verify_page.dart';
+import 'package:grd_proj/models/sign_up_model.dart';
 
 class Rigester extends StatefulWidget {
   const Rigester({super.key});
@@ -24,22 +23,8 @@ class _RigesterState extends State<Rigester> {
   bool obscureText = true;
   bool obscureText2 = true;
   bool isChecked = false;
-  List? email;
-  List? password;
-  List? firstName;
-  List? lastName;
-  List? userName;
-  List? phoneNumber;
-  Map? errors;
-  void equal(Map errors) {
-    email = errors['email'] ?? [];
-    password = errors['Password'] ?? [];
-    firstName = errors['firstName'] ?? [];
-    lastName = errors['lastName'] ?? [];
-    userName = errors['UserName'] ?? [];
-    phoneNumber = errors['phoneNumber'] ?? [];
-    print("=============$password=============");
-  }
+  String description = '';
+  SignUpModel ? response;
 
   @override
   Widget build(BuildContext context) {
@@ -53,13 +38,15 @@ class _RigesterState extends State<Rigester> {
             ),
           );
         });
-        Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => VerifyPage()));
+        Navigator.pop(context);
       } else if (state is SignUpFailure) {
-        
-        errors = state.errors;
-        equal(state.errors);
-        context.read<UserCubit>().signUpFormKey.currentState!.validate();
+        if (state.errMessage == 'Conflict') {
+          description = state.errors[0]['description'];
+          response = SignUpModel();
+        } else {
+          response = SignUpModel.fromJson(state.errors);
+        }
+        print('=============${description}===========');
         ScaffoldMessenger.of(context).clearSnackBars();
         WidgetsBinding.instance.addPostFrameCallback((_) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -68,6 +55,7 @@ class _RigesterState extends State<Rigester> {
             ),
           );
         });
+        context.read<UserCubit>().signUpFormKey.currentState!.validate();
       }
     }, builder: (context, state) {
       return Scaffold(
@@ -134,11 +122,15 @@ class _RigesterState extends State<Rigester> {
                               autocorrect: false,
                               textCapitalization: TextCapitalization.none,
                               validator: (value) {
-                                // if (userName != null) {
-                                //   print("$userName");
-                                //   return errors!['UserName'][0];
-                                // }
-                                // return null;
+                                if (response!.firstName != null) {
+                                  if (value!.isEmpty) {
+                                    return response!.firstName![0];
+                                  } else if (value.length < 3 ||
+                                      value.length > 32) {
+                                    return response!.firstName![0];
+                                  }
+                                }
+                                return null;
                               },
                             ),
                             const SizedBox(height: 16),
@@ -168,10 +160,15 @@ class _RigesterState extends State<Rigester> {
                               autocorrect: false,
                               textCapitalization: TextCapitalization.none,
                               validator: (value) {
-                                // if (value!.isEmpty) {
-                                //   return errors!['UserName'][0];
-                                // }
-                                // return null;
+                                if (response!.lasttName != null) {
+                                  if (value!.isEmpty) {
+                                    return response!.lasttName![0];
+                                  } else if (value.length < 3 ||
+                                      value.length > 32) {
+                                    return response!.lasttName![0];
+                                  }
+                                }
+                                return null;
                               },
                             ),
                             const SizedBox(height: 16),
@@ -200,8 +197,15 @@ class _RigesterState extends State<Rigester> {
                               autocorrect: false,
                               textCapitalization: TextCapitalization.none,
                               validator: (value) {
-                                if (value!.isEmpty) {
-                                  return "Please Enter Your User Name";
+                                if (response!.userName != null) {
+                                  if (value!.isEmpty) {
+                                    return response!.userName![0];
+                                  } else if (value.length < 3 ||
+                                      value.length > 32) {
+                                    return response!.userName![0];
+                                  }
+                                } else if (description.isNotEmpty && description != "A user with this email already exists." ) {
+                                  return description;
                                 }
                                 return null;
                               },
@@ -232,10 +236,14 @@ class _RigesterState extends State<Rigester> {
                               autocorrect: false,
                               textCapitalization: TextCapitalization.none,
                               validator: (value) {
-                                if (value!.isEmpty) {
-                                  return "Please enter your email";
-                                } else if (!value.contains("@")) {
-                                  return 'Please enter a valid email address';
+                                if (response!.email != null) {
+                                  if (value!.isEmpty) {
+                                    return response!.email![0];
+                                  } else if(!value.contains("@")) {
+                                    return response!.email![0];
+                                  }
+                                }else if(description.isNotEmpty && description != "A user with this username already exists."){
+                                  return description;
                                 }
                                 return null;
                               },
@@ -276,10 +284,20 @@ class _RigesterState extends State<Rigester> {
                               autocorrect: false,
                               textCapitalization: TextCapitalization.none,
                               validator: (value) {
-                                // if (password != []) {
-                                //   return password![1];
-                                // }
-                                // return null;
+                                if (response!.password != null) {
+                                  if (value!.isEmpty) {
+                                    return response!.password![0];
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content:
+                                            Text("${response!.password![0]}"),
+                                      ),
+                                    );
+                                    return response!.password![0];
+                                  }
+                                }
+                                return null;
                               },
                             ),
                             const SizedBox(height: 16),
@@ -351,12 +369,11 @@ class _RigesterState extends State<Rigester> {
                               ),
                               autocorrect: false,
                               validator: (value) {
-                                if (value!.isEmpty) {
-                                  return 'Please enter your number';
+                                if (response!.phoneNumber != null) {
+                                  if (value!.isEmpty) {
+                                    return response!.phoneNumber![0];
+                                  }
                                 }
-                                // else if (!phoneNumber.hasMatch(value)) {
-                                //   return 'Please enter a valid phone number';
-                                // }
                                 return null;
                               },
                             ),
@@ -411,10 +428,11 @@ class _RigesterState extends State<Rigester> {
                     ),
                     const SizedBox(height: 23),
 
-                    // Login Button
+                    
                     state is SignUpLoading
                         ? CircularProgressIndicator()
-                        : Padding(
+                        :
+                         Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 8),
                             child: SizedBox(
                               width: 227,
@@ -428,11 +446,6 @@ class _RigesterState extends State<Rigester> {
                                         EdgeInsets.symmetric(horizontal: 8)),
                                 onPressed: () {
                                   if (isChecked) {
-                                    context
-                                        .read<UserCubit>()
-                                        .signUpFormKey
-                                        .currentState!
-                                        .validate();
                                     if (confirmPasswordController.text ==
                                         passwordController.text) {
                                       context.read<UserCubit>().signUpPassword =
