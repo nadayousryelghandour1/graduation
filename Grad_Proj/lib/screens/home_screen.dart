@@ -2,6 +2,7 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:grd_proj/screens/fields_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Components/color.dart';
 import 'dash_board.dart';
@@ -72,13 +73,14 @@ class _HomeScreenState extends State<HomeScreen> {
     ]);
   }
 
-  String? selectedValue;
+  // String? selectedValue;
   final List<Widget> screens = [
     const DashBoard(),
     const FarmsScreen(farms: [],),
     const ScanScreen(),
     const TaskScreen(),
     const MoreScreen(),
+    const FieldsScreen(field: [])
     ];
 
   void _onItemTapped(int index) {

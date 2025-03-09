@@ -81,8 +81,9 @@ class _EditFarmState extends State<EditFarm> {
                   setState(() {
                     if (currentIndex > 0) {
                       currentIndex--;
-                      // ignore: avoid_print
                       print('stop');
+                    }else if (currentIndex == 0){
+                      Navigator.pop(context);
                     }
                   });
                 },

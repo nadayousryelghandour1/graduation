@@ -1,6 +1,8 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:flutter/material.dart';
+import 'package:grd_proj/screens/fields_screen.dart';
+import 'package:grd_proj/screens/home_screen.dart';
 import 'package:grd_proj/screens/new_farm.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import '../Components/color.dart';
@@ -219,6 +221,9 @@ class _FarmsScreen extends State<FarmsScreen> {
                                 GestureDetector(
                                   onTap: () {
                                     print("edit it");
+                                    Navigator.push(context,
+                                    MaterialPageRoute(builder: (context) => HomeScreen(initialIndex: 1,))
+                                    );
                                   },
                                   child: Image.asset('assets/images/edit.png',
                                       width: 30, height: 30),
